@@ -18,4 +18,12 @@ public interface CategoryRepository {
     void update(CategoryEntity entity);
 
     void deleteById(Long id);
+
+    /**
+     * 统计某分类的直接子分类数量（未删除）
+     *
+     * @param parentId 父分类 ID
+     * @return 子分类数量
+     */
+    long countChildren(Long parentId);
 }

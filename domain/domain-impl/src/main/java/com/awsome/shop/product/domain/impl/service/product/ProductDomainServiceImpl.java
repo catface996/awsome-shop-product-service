@@ -2,12 +2,16 @@ package com.awsome.shop.product.domain.impl.service.product;
 
 import com.awsome.shop.product.common.dto.PageResult;
 import com.awsome.shop.product.common.enums.SampleErrorCode;
+import com.awsome.shop.product.common.enums.StockErrorCode;
 import com.awsome.shop.product.common.exception.BusinessException;
 import com.awsome.shop.product.domain.model.product.ProductEntity;
+import com.awsome.shop.product.domain.model.product.ProductType;
 import com.awsome.shop.product.domain.service.product.ProductDomainService;
 import com.awsome.shop.product.repository.product.ProductRepository;
+import com.awsome.shop.product.storage.ImageStoragePort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,6 +25,7 @@ import java.util.Map;
 public class ProductDomainServiceImpl implements ProductDomainService {
 
     private final ProductRepository productRepository;
+    private final ImageStoragePort imageStoragePort;
 
     @Override
     public ProductEntity getById(Long id) {
@@ -37,7 +42,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
     }
 
     @Override
-    public ProductEntity create(String name, String sku, String category, String brand,
+    public ProductEntity create(String name, String sku, String category, ProductType productType, String brand,
                                 Integer pointsPrice, BigDecimal marketPrice, Integer stock,
                                 Integer status, String description, String imageUrl,
                                 String subtitle, String deliveryMethod, String serviceGuarantee,
@@ -52,6 +57,7 @@ public class ProductDomainServiceImpl implements ProductDomainService {
         entity.setName(name);
         entity.setSku(sku);
         entity.setCategory(category);
+        entity.setProductType(productType);
         entity.setBrand(brand);
         entity.setPointsPrice(pointsPrice);
         entity.setMarketPrice(marketPrice);
@@ -73,5 +79,49 @@ public class ProductDomainServiceImpl implements ProductDomainService {
     @Override
     public Map<String, Long> countGroupByCategory() {
         return productRepository.countGroupByCategory();
+    }
+
+    @Override
+    @Transactional
+    public void adjustStock(Long productId, int newQty) {
+        ProductEntity entity = productRepository.getById(productId);
+        if (entity == null) {
+            throw new BusinessException(StockErrorCode.PRODUCT_NOT_FOUND);
+        }
+        productRepository.adjustStock(productId, newQty);
+    }
+
+    @Override
+    public ProductEntity update(ProductEntity entity) {
+        // 校验存在性
+        getById(entity.getId());
+        productRepository.update(entity);
+        return productRepository.getById(entity.getId());
+    }
+
+    @Override
+    public void changeStatus(Long productId, Integer status) {
+        getById(productId);
+        ProductEntity patch = new ProductEntity();
+        patch.setId(productId);
+        patch.setStatus(status);
+        productRepository.update(patch);
+    }
+
+    @Override
+    public void delete(Long productId) {
+        getById(productId);
+        productRepository.deleteById(productId);
+    }
+
+    @Override
+    public String uploadImage(Long productId, byte[] content, String originalFilename) {
+        getById(productId);
+        String url = imageStoragePort.store(content, originalFilename);
+        ProductEntity patch = new ProductEntity();
+        patch.setId(productId);
+        patch.setImageUrl(url);
+        productRepository.update(patch);
+        return url;
     }
 }

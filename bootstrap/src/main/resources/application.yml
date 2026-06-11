@@ -34,6 +34,16 @@ spring:
 server:
   port: 8080
 
+# 内网鉴权配置：保护 /api/v1/private/** 内部接口
+# 该 token 必须由部署平台通过环境变量 INTERNAL_AUTH_TOKEN 注入；开发环境使用默认值
+awsomeshop:
+  internal-auth:
+    token: ${INTERNAL_AUTH_TOKEN:dev-internal-token}
+  # 商品图片本地卷存储配置
+  image:
+    storage-path: ${IMAGE_STORAGE_PATH:./data/product-images}
+    url-prefix: /images
+
 # MyBatis-Plus 配置
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml

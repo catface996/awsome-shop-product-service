@@ -49,6 +49,11 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         categoryMapper.deleteById(id);
     }
 
+    @Override
+    public long countChildren(Long parentId) {
+        return categoryMapper.countChildren(parentId);
+    }
+
     private CategoryEntity toEntity(CategoryPO po) {
         CategoryEntity entity = new CategoryEntity();
         entity.setId(po.getId());

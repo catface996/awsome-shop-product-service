@@ -9,13 +9,14 @@
                 typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
     </resultMap>
 
-    <!-- 分页查询 -->
+    <!-- 分页查询（公开列表：仅返回已上架 status=1 商品，FR-PR4 / Req 13.5） -->
     <select id="selectPage" resultMap="productResultMap">
-        SELECT id, name, sku, category, brand, points_price, market_price, stock, sold_count,
+        SELECT id, name, sku, category, product_type, brand, points_price, market_price, stock, sold_count,
                status, description, image_url, subtitle, delivery_method, service_guarantee,
                promotion, colors, specs, created_at, updated_at, created_by, updated_by, deleted, version
         FROM product
         WHERE deleted = 0
+          AND status = 1
         <if test="name != null and name != ''">
             AND name LIKE CONCAT('%', #{name}, '%')
         </if>
@@ -24,6 +25,41 @@
         </if>
         ORDER BY created_at DESC
     </select>
+
+    <!-- 统计某分类名称下未删除的商品数量 -->
+    <select id="countByCategory" resultType="long">
+        SELECT COUNT(*)
+        FROM product
+        WHERE deleted = 0
+          AND category = #{category}
+    </select>
+
+    <!-- 按 ID 加悲观锁查询（FOR UPDATE） -->
+    <select id="selectByIdForUpdate" resultMap="productResultMap">
+        SELECT id, name, sku, category, product_type, brand, points_price, market_price, stock, sold_count,
+               status, description, image_url, subtitle, delivery_method, service_guarantee,
+               promotion, colors, specs, created_at, updated_at, created_by, updated_by, deleted, version
+        FROM product
+        WHERE id = #{id} AND deleted = 0
+        FOR UPDATE
+    </select>
+
+    <!-- 正式扣减库存并累加已售数量 -->
+    <update id="deductStockAndIncrSold">
+        UPDATE product
+           SET stock = stock - #{quantity},
+               sold_count = sold_count + #{quantity},
+               updated_at = NOW()
+         WHERE id = #{productId} AND deleted = 0
+    </update>
+
+    <!-- 绝对值替换库存（管理员调整） -->
+    <update id="adjustStock">
+        UPDATE product
+           SET stock = #{newQty},
+               updated_at = NOW()
+         WHERE id = #{productId} AND deleted = 0
+    </update>
 
     <!-- 按分类名称统计商品数量 -->
     <select id="countGroupByCategory" resultType="map">

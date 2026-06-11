@@ -21,6 +21,8 @@ public class ProductEntity {
 
     private String category;
 
+    private ProductType productType;
+
     private String brand;
 
     private Integer pointsPrice;

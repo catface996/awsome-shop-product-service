@@ -25,6 +25,8 @@ public class ProductPO {
 
     private String category;
 
+    private String productType;
+
     private String brand;
 
     private Integer pointsPrice;

@@ -18,4 +18,12 @@
         ORDER BY sort_order DESC, id ASC
     </select>
 
+    <!-- 统计某父分类下的直接子分类数量 -->
+    <select id="countChildren" resultType="long">
+        SELECT COUNT(*)
+        FROM category
+        WHERE deleted = 0
+          AND parent_id = #{parentId}
+    </select>
+
 </mapper>

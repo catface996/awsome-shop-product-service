@@ -32,4 +32,38 @@ public interface ProductMapper extends BaseMapper<ProductPO> {
      */
     @MapKey("category")
     Map<String, Map<String, Object>> countGroupByCategory();
+
+    /**
+     * 统计某分类名称下未删除的商品数量
+     *
+     * @param category 分类名称
+     * @return 商品数量
+     */
+    long countByCategory(@Param("category") String category);
+
+    /**
+     * 悲观锁查询：按 ID 加行级排他锁（FOR UPDATE）
+     *
+     * @param id 商品 ID
+     * @return 商品 PO；不存在返回 null
+     */
+    ProductPO selectByIdForUpdate(@Param("id") Long id);
+
+    /**
+     * 正式扣减库存并累加已售数量
+     *
+     * @param productId 商品 ID
+     * @param quantity  扣减数量
+     * @return 受影响行数
+     */
+    int deductStockAndIncrSold(@Param("productId") Long productId, @Param("quantity") int quantity);
+
+    /**
+     * 绝对值替换库存
+     *
+     * @param productId 商品 ID
+     * @param newQty    新库存数量
+     * @return 受影响行数
+     */
+    int adjustStock(@Param("productId") Long productId, @Param("newQty") int newQty);
 }

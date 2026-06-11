@@ -37,6 +37,13 @@
             <artifactId>spring-webmvc</artifactId>
         </dependency>
 
+        <!-- Servlet API (provided by container at runtime; needed for Filter) -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Validation -->
         <dependency>
             <groupId>org.hibernate.validator</groupId>

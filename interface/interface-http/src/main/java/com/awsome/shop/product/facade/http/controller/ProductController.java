@@ -1,8 +1,12 @@
 package com.awsome.shop.product.facade.http.controller;
 
 import com.awsome.shop.product.application.api.dto.product.ProductDTO;
+import com.awsome.shop.product.application.api.dto.product.request.ChangeStatusRequest;
 import com.awsome.shop.product.application.api.dto.product.request.CreateProductRequest;
+import com.awsome.shop.product.application.api.dto.product.request.DeleteProductRequest;
+import com.awsome.shop.product.application.api.dto.product.request.GetProductRequest;
 import com.awsome.shop.product.application.api.dto.product.request.ListProductRequest;
+import com.awsome.shop.product.application.api.dto.product.request.UpdateProductRequest;
 import com.awsome.shop.product.application.api.service.product.ProductApplicationService;
 import com.awsome.shop.product.common.dto.PageResult;
 import com.awsome.shop.product.common.result.Result;
@@ -36,5 +40,31 @@ public class ProductController {
     @PostMapping("/public/product/list")
     public Result<PageResult<ProductDTO>> list(@RequestBody @Valid ListProductRequest request) {
         return Result.success(productApplicationService.list(request));
+    }
+
+    @Operation(summary = "商品详情查询")
+    @PostMapping("/public/product/get")
+    public Result<ProductDTO> get(@RequestBody @Valid GetProductRequest request) {
+        return Result.success(productApplicationService.getById(request));
+    }
+
+    @Operation(summary = "编辑商品")
+    @PostMapping("/public/product/update")
+    public Result<ProductDTO> update(@RequestBody @Valid UpdateProductRequest request) {
+        return Result.success(productApplicationService.update(request));
+    }
+
+    @Operation(summary = "上下架商品")
+    @PostMapping("/public/product/change-status")
+    public Result<Void> changeStatus(@RequestBody @Valid ChangeStatusRequest request) {
+        productApplicationService.changeStatus(request);
+        return Result.success();
+    }
+
+    @Operation(summary = "删除商品")
+    @PostMapping("/public/product/delete")
+    public Result<Void> delete(@RequestBody @Valid DeleteProductRequest request) {
+        productApplicationService.delete(request);
+        return Result.success();
     }
 }

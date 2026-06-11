@@ -2,6 +2,7 @@ package com.awsome.shop.product.application.api.dto.product.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -26,6 +27,10 @@ public class CreateProductRequest {
     @NotBlank(message = "商品分类不能为空")
     @Size(max = 100, message = "商品分类不能超过100个字符")
     private String category;
+
+    @NotBlank(message = "商品类型不能为空")
+    @Pattern(regexp = "PHYSICAL|VIRTUAL", message = "商品类型必须为 PHYSICAL 或 VIRTUAL")
+    private String productType;
 
     @Size(max = 100, message = "品牌不能超过100个字符")
     private String brand;

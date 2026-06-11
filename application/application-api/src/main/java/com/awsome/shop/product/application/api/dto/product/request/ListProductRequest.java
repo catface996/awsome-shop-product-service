@@ -20,4 +20,14 @@ public class ListProductRequest {
     private String name;
 
     private String category;
+
+    /**
+     * 关键字搜索（按商品名称模糊匹配，FR-PR4）
+     */
+    private String keyword;
+
+    /**
+     * 按分类 ID 过滤（FR-PR4）
+     */
+    private Long categoryId;
 }

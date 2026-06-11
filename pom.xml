@@ -49,10 +49,23 @@
 
         <!-- Security & JWT -->
         <jjwt.version>0.12.6</jjwt.version>
+
+        <!-- Lombok (1.18.42 supports JDK 21–25) -->
+        <lombok.version>1.18.42</lombok.version>
+
+        <!-- JaCoCo (0.8.13 supports newer JDK class file versions) -->
+        <jacoco.version>0.8.13</jacoco.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- Lombok override (Spring Boot BOM pins an older version incompatible with newer JDKs) -->
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+
             <!-- Spring Boot BOM -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -153,7 +166,7 @@
                             <path>
                                 <groupId>org.projectlombok</groupId>
                                 <artifactId>lombok</artifactId>
-                                <version>1.18.36</version>
+                                <version>${lombok.version}</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
@@ -163,7 +176,7 @@
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.12</version>
+                    <version>${jacoco.version}</version>
                     <executions>
                         <execution>
                             <id>prepare-agent</id>

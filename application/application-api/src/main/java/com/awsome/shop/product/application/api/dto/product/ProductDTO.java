@@ -21,6 +21,8 @@ public class ProductDTO {
 
     private String category;
 
+    private String productType;
+
     private String brand;
 
     private Integer pointsPrice;
@@ -48,6 +50,11 @@ public class ProductDTO {
     private String colors;
 
     private List<Map<String, String>> specs;
+
+    /**
+     * 派生字段：可用库存为 0 时为 true（FR-PR5 售罄判定）
+     */
+    private Boolean soldOut;
 
     private LocalDateTime createdAt;
 

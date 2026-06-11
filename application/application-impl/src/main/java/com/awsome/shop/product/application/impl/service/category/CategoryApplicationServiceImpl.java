@@ -1,7 +1,10 @@
 package com.awsome.shop.product.application.impl.service.category;
 
 import com.awsome.shop.product.application.api.dto.category.CategoryDTO;
+import com.awsome.shop.product.application.api.dto.category.request.CreateCategoryRequest;
+import com.awsome.shop.product.application.api.dto.category.request.DeleteCategoryRequest;
 import com.awsome.shop.product.application.api.dto.category.request.ListCategoryRequest;
+import com.awsome.shop.product.application.api.dto.category.request.UpdateCategoryRequest;
 import com.awsome.shop.product.application.api.service.category.CategoryApplicationService;
 import com.awsome.shop.product.domain.model.category.CategoryEntity;
 import com.awsome.shop.product.domain.service.category.CategoryDomainService;
@@ -43,6 +46,48 @@ public class CategoryApplicationServiceImpl implements CategoryApplicationServic
 
         // 4. 组装树形结构
         return buildTree(allDTOs);
+    }
+
+    @Override
+    public CategoryDTO create(CreateCategoryRequest request) {
+        CategoryEntity entity = new CategoryEntity();
+        entity.setName(request.getName());
+        entity.setParentId(request.getParentId());
+        entity.setIcon(request.getIcon());
+        entity.setSortOrder(request.getSortOrder());
+        entity.setStatus(request.getStatus());
+        entity.setDescription(request.getDescription());
+        return toSingleDTO(categoryDomainService.create(entity));
+    }
+
+    @Override
+    public CategoryDTO update(UpdateCategoryRequest request) {
+        CategoryEntity entity = new CategoryEntity();
+        entity.setId(request.getId());
+        entity.setName(request.getName());
+        entity.setIcon(request.getIcon());
+        entity.setSortOrder(request.getSortOrder());
+        entity.setStatus(request.getStatus());
+        entity.setDescription(request.getDescription());
+        return toSingleDTO(categoryDomainService.update(entity));
+    }
+
+    @Override
+    public void delete(DeleteCategoryRequest request) {
+        categoryDomainService.delete(request.getId());
+    }
+
+    private CategoryDTO toSingleDTO(CategoryEntity entity) {
+        CategoryDTO dto = new CategoryDTO();
+        dto.setId(entity.getId());
+        dto.setName(entity.getName());
+        dto.setParentId(entity.getParentId());
+        dto.setIcon(entity.getIcon());
+        dto.setSortOrder(entity.getSortOrder());
+        dto.setStatus(entity.getStatus());
+        dto.setDescription(entity.getDescription());
+        dto.setChildren(new ArrayList<>());
+        return dto;
     }
 
     private List<CategoryDTO> buildTree(List<CategoryDTO> allDTOs) {

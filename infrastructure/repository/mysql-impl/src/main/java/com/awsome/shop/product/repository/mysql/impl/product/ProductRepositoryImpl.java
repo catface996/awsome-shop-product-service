@@ -2,6 +2,7 @@ package com.awsome.shop.product.repository.mysql.impl.product;
 
 import com.awsome.shop.product.common.dto.PageResult;
 import com.awsome.shop.product.domain.model.product.ProductEntity;
+import com.awsome.shop.product.domain.model.product.ProductType;
 import com.awsome.shop.product.repository.mysql.mapper.product.ProductMapper;
 import com.awsome.shop.product.repository.mysql.po.product.ProductPO;
 import com.awsome.shop.product.repository.product.ProductRepository;
@@ -71,6 +72,22 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
+    public ProductEntity lockById(Long id) {
+        ProductPO po = productMapper.selectByIdForUpdate(id);
+        return po == null ? null : toEntity(po);
+    }
+
+    @Override
+    public void deductStockAndIncrSold(Long productId, int quantity) {
+        productMapper.deductStockAndIncrSold(productId, quantity);
+    }
+
+    @Override
+    public void adjustStock(Long productId, int newQty) {
+        productMapper.adjustStock(productId, newQty);
+    }
+
+    @Override
     public Map<String, Long> countGroupByCategory() {
         Map<String, Map<String, Object>> raw = productMapper.countGroupByCategory();
         if (raw == null || raw.isEmpty()) {
@@ -84,12 +101,18 @@ public class ProductRepositoryImpl implements ProductRepository {
         return result;
     }
 
+    @Override
+    public long countByCategory(String category) {
+        return productMapper.countByCategory(category);
+    }
+
     private ProductEntity toEntity(ProductPO po) {
         ProductEntity entity = new ProductEntity();
         entity.setId(po.getId());
         entity.setName(po.getName());
         entity.setSku(po.getSku());
         entity.setCategory(po.getCategory());
+        entity.setProductType(po.getProductType() == null ? null : ProductType.valueOf(po.getProductType()));
         entity.setBrand(po.getBrand());
         entity.setPointsPrice(po.getPointsPrice());
         entity.setMarketPrice(po.getMarketPrice());
@@ -115,6 +138,7 @@ public class ProductRepositoryImpl implements ProductRepository {
         po.setName(entity.getName());
         po.setSku(entity.getSku());
         po.setCategory(entity.getCategory());
+        po.setProductType(entity.getProductType() == null ? null : entity.getProductType().name());
         po.setBrand(entity.getBrand());
         po.setPointsPrice(entity.getPointsPrice());
         po.setMarketPrice(entity.getMarketPrice());

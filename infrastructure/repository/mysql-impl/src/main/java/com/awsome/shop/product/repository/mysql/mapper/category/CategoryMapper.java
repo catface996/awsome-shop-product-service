@@ -21,4 +21,12 @@ public interface CategoryMapper extends BaseMapper<CategoryPO> {
      * @return 类目列表
      */
     List<CategoryPO> selectList(@Param("name") String name, @Param("status") Integer status);
+
+    /**
+     * 统计某分类的直接子分类数量（未删除）
+     *
+     * @param parentId 父分类 ID
+     * @return 子分类数量
+     */
+    long countChildren(@Param("parentId") Long parentId);
 }
